@@ -1,28 +1,45 @@
 $header-background-color: #DDD;
 $border: 1px solid $header-background-color;
 
-table.cs-data-table {
-  color: #444;
-  background: #FFF;
-  border: $border;
-  border-collapse: collapse;
+.cs-data-table {
+  .cs-data-table-toolbar {
+    display: flex;
+    padding: 10px;
+    background-color: lighten($header-background-color, 10%);
 
-  thead th {
-    color: #444;
-    background-color: $header-background-color;
-  }
+    .cs-data-table-searchbar {
+      margin-left: auto;
 
-  th,
-  td {
-    padding: .5em;
-    border: $border;
-
-    &.empty {
-      text-align: center;
+      input {
+        width: 200px;
+      }
     }
   }
 
-  tbody tr:nth-of-type(odd) {
-    background-color: lighten($header-background-color, 10%);
+  table {
+    width: 100%;
+    color: #444;
+    background: #FFF;
+    border: $border;
+    border-collapse: collapse;
+
+    thead th {
+      color: #444;
+      background-color: $header-background-color;
+    }
+
+    th,
+    td {
+      padding: .5em;
+      border: $border;
+
+      &.empty {
+        text-align: center;
+      }
+    }
+
+    tbody tr:nth-of-type(odd) {
+      background-color: lighten($header-background-color, 10%);
+    }
   }
 }

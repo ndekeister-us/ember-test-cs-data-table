@@ -4,36 +4,48 @@ import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 
 export default class ExampleFinanceComponent extends Component {
-  columns = [
-    {
-      key: 'id',
-      label: 'ID',
-    },
-    {
-      key: 'name',
-      label: 'Name',
-    },
-    {
-      key: 'amount',
-      label: 'Amount',
-    },
-    {
-      key: 'email',
-      label: 'Email',
-    },
-    {
-      key: 'creditCardIssuer',
-      label: 'Credit card issuer',
-    },
-    {
-      key: 'creditCardNumber',
-      label: 'Credit card number',
-    },
-    {
-      key: 'actions',
-      label: 'Sensible data',
-    },
-  ];
+  @tracked enableFiltering = true;
+
+  @tracked searchDebounce = '500';
+
+  get columns() {
+    return [
+      {
+        key: 'id',
+        label: 'ID',
+        searchable: this.enableFiltering,
+      },
+      {
+        key: 'name',
+        label: 'Name',
+        searchable: this.enableFiltering,
+      },
+      {
+        key: 'amount',
+        label: 'Amount',
+      },
+      {
+        key: 'strangeKey',
+        label: 'Email',
+        searchable: this.enableFiltering,
+        searchKey: 'email',
+      },
+      {
+        key: 'creditCardIssuer',
+        label: 'Credit card issuer',
+        searchable: this.enableFiltering,
+      },
+      {
+        key: 'creditCardNumber',
+        label: 'Credit card number',
+        searchable: this.enableFiltering,
+      },
+      {
+        key: 'actions',
+        label: 'Sensible data',
+      },
+    ];
+  }
 
   fullData = [...Array(10).keys()].map(() => {
     const expirationDate = faker.date.future();
