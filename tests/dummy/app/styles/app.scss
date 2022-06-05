@@ -1,0 +1,28 @@
+$header-background-color: #DDD;
+$border: 1px solid $header-background-color;
+
+table {
+  color: #444;
+  background: #FFF;
+  border: $border;
+  border-collapse: collapse;
+}
+
+table thead th {
+  color: #444;
+  background-color: $header-background-color;
+}
+
+table th,
+table td {
+  padding: .5em;
+  border: $border;
+
+  &.center {
+    text-align: center;
+  }
+}
+
+table tbody tr:nth-of-type(odd) {
+  background-color: lighten($header-background-color, 10%);
+}

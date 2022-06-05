@@ -1,0 +1,35 @@
+<h3>Financial data</h3>
+
+<table>
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Name</th>
+    <th>Amount</th>
+    <th>Email</th>
+    <th>Credit card issuer</th>
+    <th>Credit card number</th>
+    <th>Sensible data</th>
+  </tr>
+  </thead>
+  <tbody>
+  {{#each this.data as |item|}}
+    <tr>
+      <td>{{item.id}}</td>
+      <td>{{item.name}}</td>
+      <td>{{item.amount}}</td>
+      <td>{{item.email}}</td>
+      <td>{{item.creditCardIssuer}}</td>
+      <td>{{item.creditCardNumber}}</td>
+      <td class="center">
+        <button
+          type="button"
+          {{on 'click' (fn this.showSecretData item)}}
+        >
+          Show
+        </button>
+      </td>
+    </tr>
+  {{/each}}
+  </tbody>
+</table>
