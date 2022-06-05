@@ -1,9 +1,26 @@
-<div class="cs-data-table-columns-customization">
+<div class="cs-data-table-columns-customization" data-test-columns-customization>
   {{#if @isCustomizingColumns}}
-    <button disabled={{this.isResetButtonDisabled}} type="button" {{on "click" @onResetColumns}}>Reset</button>
-    <button type="button" {{on "click" @onCustomizingEnd}}>Save</button>
+    <button
+      disabled={{this.isResetButtonDisabled}}
+      type="button"
+      {{on "click" @onResetColumns}}
+      data-test-reset
+    >
+      Reset
+    </button>
+    <button
+      type="button"
+      {{on "click" @onCustomizingEnd}}
+      data-test-end
+    >
+      Save
+    </button>
   {{else}}
-    <button type="button" {{on "click" @onCustomizingStart}}>
+    <button
+      type="button"
+      {{on "click" @onCustomizingStart}}
+      data-test-start
+    >
       Customize columns {{#if this.filteredColumns}}({{this.filteredColumns.length}} hidden){{/if}}
     </button>
   {{/if}}
