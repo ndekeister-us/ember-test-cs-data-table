@@ -7,7 +7,7 @@
             title="Move column to the left"
             type="button"
             {{on "click" (fn @onMove @column (dec @index))}}
-            data-test-header-cell-move-left
+            data-test-move-left
           >
             &#60;
           </button>
@@ -17,20 +17,20 @@
           type="checkbox"
           checked={{not @column.hidden}}
           {{on "change" (fn @onToggleVisibility (not @column.hidden))}}
-          data-test-header-cell-visibility-checkbox
+          data-test-visibility-checkbox
         />
         {{#unless @last}}
           <button
             title="Move column to the right"
             type="button"
             {{on "click" (fn @onMove @column (inc @index))}}
-            data-test-header-cell-move-right
+            data-test-move-right
           >
             &#62;
           </button>
         {{/unless}}
       </div>
     {{/if}}
-    {{@column.label}}
+    <span data-test-label>{{@column.label}}</span>
   </th>
 {{/if}}

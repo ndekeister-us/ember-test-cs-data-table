@@ -8,13 +8,18 @@ module('Integration | Component | cs-data-table/-empty', function (hooks) {
 
   test('it renders', async function (assert) {
     await render(
-      hbs`<CsDataTable::-Empty @nbCols="4">test</CsDataTable::-Empty>`
+      hbs`<CsDataTable::-Empty @nbCols="4" data-pass-attributes="test" @type="test">test</CsDataTable::-Empty>`
     );
 
     assert
-      .dom('[data-test-empty]')
-      .hasText('test')
-      .hasClass('empty')
-      .hasAttribute('colspan', '4');
+      .dom('td[data-test-empty="test"]')
+      .hasText('test', 'It yield content correctly')
+      .hasClass('empty', 'Cell have correct class')
+      .hasAttribute('colspan', '4', 'Cell colspan equals @nbCols')
+      .hasAttribute(
+        'data-pass-attributes',
+        'test',
+        'It pass attributes correctly'
+      );
   });
 });

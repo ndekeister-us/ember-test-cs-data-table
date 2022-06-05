@@ -103,7 +103,7 @@ module(
         );
 
         assert
-          .dom('[data-test-header-cell-move-left]')
+          .dom('[data-test-move-left]')
           .hasText('<', 'Button have correct text')
           .hasAttribute(
             'title',
@@ -111,14 +111,14 @@ module(
             'Button have correct title'
           );
 
-        await click('[data-test-header-cell-move-left]');
+        await click('[data-test-move-left]');
 
         this.set('first', true);
 
         await settled();
 
         assert
-          .dom('[data-test-header-cell-move-left]')
+          .dom('[data-test-move-left]')
           .doesNotExist('Button is not displayed when column is the first one');
       });
 
@@ -152,7 +152,7 @@ module(
         );
 
         assert
-          .dom('[data-test-header-cell-move-right]')
+          .dom('[data-test-move-right]')
           .hasText('>', 'Button have correct text')
           .hasAttribute(
             'title',
@@ -160,14 +160,14 @@ module(
             'Button have correct title'
           );
 
-        await click('[data-test-header-cell-move-right]');
+        await click('[data-test-move-right]');
 
         this.set('last', true);
 
         await settled();
 
         assert
-          .dom('[data-test-header-cell-move-right]')
+          .dom('[data-test-move-right]')
           .doesNotExist('Button is not displayed when column is the last one');
       });
 
@@ -191,7 +191,7 @@ module(
         );
 
         assert
-          .dom('[data-test-header-cell-visibility-checkbox]')
+          .dom('[data-test-visibility-checkbox]')
           .hasAria(
             'label',
             'Click to hide Some label column',
@@ -199,18 +199,18 @@ module(
           )
           .isChecked('Checkbox is checked as column is not hidden');
 
-        await click('[data-test-header-cell-visibility-checkbox]');
+        await click('[data-test-visibility-checkbox]');
 
         assert.true(this.column.hidden, 'Column is hidden');
         assert
-          .dom('[data-test-header-cell-visibility-checkbox]')
+          .dom('[data-test-visibility-checkbox]')
           .isNotChecked('Checkbox is not checked as column is hidden');
 
-        await click('[data-test-header-cell-visibility-checkbox]');
+        await click('[data-test-visibility-checkbox]');
 
         assert.false(this.column.hidden, 'Column is not hidden');
         assert
-          .dom('[data-test-header-cell-visibility-checkbox]')
+          .dom('[data-test-visibility-checkbox]')
           .isChecked('Checkbox is checked as column is not hidden');
       });
     });
