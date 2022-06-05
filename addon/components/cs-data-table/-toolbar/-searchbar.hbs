@@ -1,8 +1,12 @@
-<div id={{this.id}} class="cs-data-table-searchbar">
+<div
+  id={{this.id}}
+  class="cs-data-table-searchbar"
+  {{did-insert this.initialize}}
+>
   <span id={{this.tooltipId}} title={{this.tooltip}}>(i)</span>
   <input
     type="text"
-    value={{@value}}
+    value={{this.initialValue}}
     {{on "keyup" (pick "target.value" this.search)}}
     aria-labelledby={{this.tooltipId}}
   />

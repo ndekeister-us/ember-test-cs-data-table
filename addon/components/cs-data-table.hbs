@@ -1,6 +1,6 @@
 <div class="cs-data-table"
-  {{did-insert this.initializeColumns}}
-  {{did-update this.initializeColumns @allowColumnsCustomization @columns}}
+  {{did-insert this.initialize}}
+  {{did-update this.initialize @allowColumnsCustomization @columns}}
 >
   {{#if this.isToolbarEnabled}}
     <div class="cs-data-table-toolbar">
@@ -15,10 +15,10 @@
       {{/if}}
       {{#if this.isSearchEnabled}}
         <CsDataTable::-Toolbar::-Searchbar
-          @columns={{this.searchableColumns}}
           @debounce={{@searchDebounce}}
-          @value={{this.searchText}}
           @onSearch={{fn (mut this.searchText)}}
+          @searchableColumns={{this.searchableColumns}}
+          @value={{this.searchText}}
         />
       {{/if}}
     </div>

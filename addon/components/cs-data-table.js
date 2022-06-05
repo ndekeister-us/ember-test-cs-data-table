@@ -51,9 +51,9 @@ export default class CsDataTableComponent extends Component {
   get data() {
     if (this.isSearchEnabled && this.searchText.trim() !== '') {
       let searchText = this.searchText.trim().toLowerCase();
-      let searchableColumnsKeys = this.searchableColumns
-        .filter((column) => !column.hidden)
-        .map((column) => column.searchKey);
+      let searchableColumnsKeys = this.searchableColumns.map(
+        (column) => column.searchKey
+      );
       return this.args.data.filter((item) => {
         return searchableColumnsKeys.some((key) => {
           return item[key].toString().toLowerCase().includes(searchText);
@@ -65,7 +65,7 @@ export default class CsDataTableComponent extends Component {
   }
 
   get searchableColumns() {
-    return this.columns.filter((column) => column.searchable);
+    return this.columns.filter((column) => column.searchable && !column.hidden);
   }
 
   get isSearchEnabled() {
@@ -77,7 +77,7 @@ export default class CsDataTableComponent extends Component {
   }
 
   @action
-  initializeColumns() {
+  initialize() {
     this.columns = this.args.columns
       .filter((column) => !!column.key)
       .map((column, i) => new Column(column, i));
