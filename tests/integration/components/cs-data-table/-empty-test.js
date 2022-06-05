@@ -7,8 +7,14 @@ module('Integration | Component | cs-data-table/-empty', function (hooks) {
   setupRenderingTest(hooks);
 
   test('it renders', async function (assert) {
-    await render(hbs`<CsDataTable::-Empty />`);
+    await render(
+      hbs`<CsDataTable::-Empty @nbCols="4">test</CsDataTable::-Empty>`
+    );
 
-    assert.dom(this.element).hasText('');
+    assert
+      .dom('[data-test-empty]')
+      .hasText('test')
+      .hasClass('empty')
+      .hasAttribute('colspan', '4');
   });
 });
