@@ -108,6 +108,10 @@ module(
 
       assert.dom('[data-test-input]').hasValue('', 'Input is now empty');
       assert.strictEqual(this.value, '');
+
+      assert
+        .dom('[data-test-input]')
+        .isFocused('Search input is focused after click on clear button');
     });
   }
 );
