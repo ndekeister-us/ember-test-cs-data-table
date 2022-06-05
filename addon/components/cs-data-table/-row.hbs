@@ -1,9 +1,10 @@
-<tr ...attributes>
-  {{#each (sort-by "order" @columns) as |column|}}
+<tr ...attributes data-test-row-index={{@index}}>
+  {{#each (sort-by "order" @columns) as |column index|}}
     {{yield (hash
               cell=(
                 component "cs-data-table/-row/-cell"
                 column=column
+                index=index
                 isCustomizingColumns=@isCustomizingColumns
                 item=@item
               )

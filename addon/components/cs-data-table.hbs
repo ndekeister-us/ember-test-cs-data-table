@@ -48,11 +48,12 @@
       {{else if (is-empty this.data)}}
         {{yield (hash noResult=(component "cs-data-table/-empty" nbCols=this.columns.length))}}
       {{else}}
-        {{#each this.data as |item|}}
+        {{#each this.data as |item index|}}
           {{yield (hash
                     row=(
                       component "cs-data-table/-row"
                       columns=this.columns
+                      index=index
                       isCustomizingColumns=this.isCustomizingColumns
                       item=item
                     )
