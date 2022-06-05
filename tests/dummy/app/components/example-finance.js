@@ -3,6 +3,37 @@ import { faker } from '@faker-js/faker';
 import { action } from '@ember/object';
 
 export default class ExampleFinanceComponent extends Component {
+  columns = [
+    {
+      key: 'id',
+      label: 'ID',
+    },
+    {
+      key: 'name',
+      label: 'Name',
+    },
+    {
+      key: 'amount',
+      label: 'Amount',
+    },
+    {
+      key: 'email',
+      label: 'Email',
+    },
+    {
+      key: 'creditCardIssuer',
+      label: 'Credit card issuer',
+    },
+    {
+      key: 'creditCardNumber',
+      label: 'Credit card number',
+    },
+    {
+      key: 'actions',
+      label: 'Sensible data',
+    },
+  ];
+
   data = [...Array(10).keys()].map(() => {
     const expirationDate = faker.date.future();
     return {

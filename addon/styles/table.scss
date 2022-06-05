@@ -1,0 +1,24 @@
+$header-background-color: #DDD;
+$border: 1px solid $header-background-color;
+
+table.cs-data-table {
+  color: #444;
+  background: #FFF;
+  border: $border;
+  border-collapse: collapse;
+
+  thead th {
+    color: #444;
+    background-color: $header-background-color;
+  }
+
+  th,
+  td {
+    padding: .5em;
+    border: $border;
+  }
+
+  tbody tr:nth-of-type(odd) {
+    background-color: lighten($header-background-color, 10%);
+  }
+}
