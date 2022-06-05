@@ -1,61 +1,63 @@
-<h3>Financial data</h3>
+<div data-test-financial-data-table>
+  <h3>Financial data</h3>
 
-<p>
-  <button type="button" {{on "click" this.toggleData}}>
-    {{#if (is-empty this.data)}}
-      Populate with data
-    {{else}}
-      Clear data
-    {{/if}}
-  </button>
-  <button type="button" {{on "click" (fn (mut this.enableFiltering) (not this.enableFiltering))}}>
+  <p data-test-demo-actions>
+    <button type="button" data-test-toggle-data {{on "click" this.toggleData}}>
+      {{#if (is-empty this.data)}}
+        Populate with data
+      {{else}}
+        Clear data
+      {{/if}}
+    </button>
+    <button type="button" data-test-toggle-filtering {{on "click" (fn (mut this.enableFiltering) (not this.enableFiltering))}}>
+      {{#if this.enableFiltering}}
+        Disable
+      {{else}}
+        Enable
+      {{/if}}
+      filtering
+    </button>
     {{#if this.enableFiltering}}
-      Disable
-    {{else}}
-      Enable
+      <label>
+        Search debounce
+        <select {{on "change" (pick 'target.value' (fn (mut this.searchDebounce)))}}>
+          <option value="0" selected={{if (eq this.searchDebounce "0") "true"}}>Live</option>
+          <option value="500" selected={{if (eq this.searchDebounce "500") "true"}}>500ms</option>
+          <option value="2000" selected={{if (eq this.searchDebounce "2000") "true"}}>2 seconds</option>
+        </select>
+      </label>
     {{/if}}
-    filtering
-  </button>
-  {{#if this.enableFiltering}}
-    <label>
-      Search debounce
-      <select {{on "change" (pick 'target.value' (fn (mut this.searchDebounce)))}}>
-        <option value="0" selected={{if (eq this.searchDebounce "0") "true"}}>Live</option>
-        <option value="500" selected={{if (eq this.searchDebounce "500") "true"}}>500ms</option>
-        <option value="2000" selected={{if (eq this.searchDebounce "2000") "true"}}>2 seconds</option>
-      </select>
-    </label>
-  {{/if}}
-  <button type="button" {{on "click" (fn (mut this.allowColumnsCustomization) (not this.allowColumnsCustomization))}}>
-    {{#if this.allowColumnsCustomization}}
-      Disable
-    {{else}}
-      Enable
-    {{/if}}
-    columns customization
-  </button>
-</p>
+    <button type="button" data-test-toggle-customization {{on "click" (fn (mut this.allowColumnsCustomization) (not this.allowColumnsCustomization))}}>
+      {{#if this.allowColumnsCustomization}}
+        Disable
+      {{else}}
+        Enable
+      {{/if}}
+      columns customization
+    </button>
+  </p>
 
-<CsDataTable
-  @allowColumnsCustomization={{this.allowColumnsCustomization}}
-  @columns={{this.columns}}
-  @data={{this.data}}
-  @searchDebounce={{this.searchDebounce}} as |table|
->
-  <table.empty>
-    There is no data to display
-  </table.empty>
-  <table.noResult>
-    Nothing match your criteria. Try using different search terms
-  </table.noResult>
-  <table.row as |row|>
-    <row.cell @key="id" as |item|>{{item.id}}</row.cell>
-    <row.cell @key="name" as |item|>{{item.name}}</row.cell>
-    <row.cell @key="amount" as |item|>{{item.amount}}</row.cell>
-    <row.cell @key="strangeKey" as |item|>{{item.email}}</row.cell>
-    <row.cell @key="creditCardIssuer" as |item|>{{item.creditCardIssuer}}</row.cell>
-    <row.cell @key="creditCardNumber" as |item|>{{item.creditCardNumber}}</row.cell>
-    <row.cell @key="creditCardExpirationDate" as |item|>{{item.creditCardExpirationDate}}</row.cell>
-    <row.cell @key="actions" class="center" as |item|><button type="button" {{on 'click' (fn this.showSecretData item)}}>Show</button></row.cell>
-  </table.row>
-</CsDataTable>
+  <CsDataTable
+    @allowColumnsCustomization={{this.allowColumnsCustomization}}
+    @columns={{this.columns}}
+    @data={{this.data}}
+    @searchDebounce={{this.searchDebounce}} as |table|
+  >
+    <table.empty>
+      There is no data to display
+    </table.empty>
+    <table.noResult>
+      Nothing match your criteria. Try using different search terms
+    </table.noResult>
+    <table.row as |row|>
+      <row.cell @key="id" as |item|>{{item.id}}</row.cell>
+      <row.cell @key="name" as |item|>{{item.name}}</row.cell>
+      <row.cell @key="amount" as |item|>{{item.amount}}</row.cell>
+      <row.cell @key="strangeKey" as |item|>{{item.email}}</row.cell>
+      <row.cell @key="creditCardIssuer" as |item|>{{item.creditCardIssuer}}</row.cell>
+      <row.cell @key="creditCardNumber" as |item|>{{item.creditCardNumber}}</row.cell>
+      <row.cell @key="creditCardExpirationDate" as |item|>{{item.creditCardExpirationDate}}</row.cell>
+      <row.cell @key="actions" class="center" as |item|><button type="button" {{on 'click' (fn this.showSecretData item)}}>Show</button></row.cell>
+    </table.row>
+  </CsDataTable>
+</div>
