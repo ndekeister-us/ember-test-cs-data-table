@@ -1,1 +1,5 @@
-<td ...attributes>{{yield @item}}</td>
+{{#if (eq @column.key @key)}}
+  {{#if (or @isCustomizingColumns (not @column.hidden))}}
+    <td ...attributes>{{yield @item}}</td>
+  {{/if}}
+{{/if}}

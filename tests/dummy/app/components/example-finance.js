@@ -4,6 +4,8 @@ import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
 
 export default class ExampleFinanceComponent extends Component {
+  @tracked allowColumnsCustomization = true;
+
   @tracked enableFiltering = true;
 
   @tracked searchDebounce = '500';
@@ -39,6 +41,12 @@ export default class ExampleFinanceComponent extends Component {
         key: 'creditCardNumber',
         label: 'Credit card number',
         searchable: this.enableFiltering,
+      },
+      {
+        key: 'creditCardExpirationDate',
+        label: 'Credit card expiration date',
+        searchable: this.enableFiltering,
+        hidden: true,
       },
       {
         key: 'actions',

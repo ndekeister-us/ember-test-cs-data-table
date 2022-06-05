@@ -1,0 +1,33 @@
+{{#if (or (not @column.hidden) @isCustomizingColumns)}}
+  <th>
+    {{#if @isCustomizingColumns}}
+      <div class="cs-data-table-columns-customization">
+        {{#unless @first}}
+          <button
+            title="Move column to the left"
+            type="button"
+            {{on "click" (fn @onMove @column (dec @index))}}
+          >
+            &#60;
+          </button>
+        {{/unless}}
+        <input
+          aria-label={{this.visibilityTooltip}}
+          type="checkbox"
+          checked={{not @column.hidden}}
+          {{on "change" (fn @onToggleVisibility (not @column.hidden))}}
+        />
+        {{#unless @last}}
+          <button
+            title="Move column to the right"
+            type="button"
+            {{on "click" (fn @onMove @column (inc @index))}}
+          >
+            &#62;
+          </button>
+        {{/unless}}
+      </div>
+    {{/if}}
+    {{@column.label}}
+  </th>
+{{/if}}

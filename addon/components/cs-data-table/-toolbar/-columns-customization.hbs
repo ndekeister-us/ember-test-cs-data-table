@@ -1,0 +1,10 @@
+<div class="cs-data-table-columns-customization">
+  {{#if @isCustomizingColumns}}
+    <button disabled={{this.isResetButtonDisabled}} type="button" {{on "click" @onResetColumns}}>Reset</button>
+    <button type="button" {{on "click" @onCustomizingEnd}}>Save</button>
+  {{else}}
+    <button type="button" {{on "click" @onCustomizingStart}}>
+      Customize columns {{#if this.filteredColumns}}({{this.filteredColumns.length}} hidden){{/if}}
+    </button>
+  {{/if}}
+</div>

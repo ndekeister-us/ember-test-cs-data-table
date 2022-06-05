@@ -1,3 +1,13 @@
 <tr ...attributes>
-  {{yield (hash cell=(component "cs-data-table/-row/-cell" item=@item))}}
+  {{#each (sort-by "order" @columns) as |column|}}
+    {{yield (hash
+              cell=(
+                component "cs-data-table/-row/-cell"
+                column=column
+                isCustomizingColumns=@isCustomizingColumns
+                item=@item
+              )
+            )
+    }}
+  {{/each}}
 </tr>

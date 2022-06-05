@@ -7,6 +7,12 @@ $border: 1px solid $header-background-color;
     padding: 10px;
     background-color: lighten($header-background-color, 10%);
 
+    .cs-data-table-columns-customization {
+      button {
+        margin-right: 5px;
+      }
+    }
+
     .cs-data-table-searchbar {
       margin-left: auto;
 
@@ -26,6 +32,13 @@ $border: 1px solid $header-background-color;
     thead th {
       color: #444;
       background-color: $header-background-color;
+
+      .cs-data-table-columns-customization {
+        padding-bottom: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
     }
 
     th,

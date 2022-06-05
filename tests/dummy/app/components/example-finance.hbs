@@ -26,9 +26,22 @@
       </select>
     </label>
   {{/if}}
+  <button type="button" {{on "click" (fn (mut this.allowColumnsCustomization) (not this.allowColumnsCustomization))}}>
+    {{#if this.allowColumnsCustomization}}
+      Disable
+    {{else}}
+      Enable
+    {{/if}}
+    columns customization
+  </button>
 </p>
 
-<CsDataTable @columns={{this.columns}} @data={{this.data}} @searchDebounce={{this.searchDebounce}} as |table|>
+<CsDataTable
+  @allowColumnsCustomization={{this.allowColumnsCustomization}}
+  @columns={{this.columns}}
+  @data={{this.data}}
+  @searchDebounce={{this.searchDebounce}} as |table|
+>
   <table.empty>
     There is no data to display
   </table.empty>
@@ -42,6 +55,7 @@
     <row.cell @key="strangeKey" as |item|>{{item.email}}</row.cell>
     <row.cell @key="creditCardIssuer" as |item|>{{item.creditCardIssuer}}</row.cell>
     <row.cell @key="creditCardNumber" as |item|>{{item.creditCardNumber}}</row.cell>
+    <row.cell @key="creditCardExpirationDate" as |item|>{{item.creditCardExpirationDate}}</row.cell>
     <row.cell @key="actions" class="center" as |item|><button type="button" {{on 'click' (fn this.showSecretData item)}}>Show</button></row.cell>
   </table.row>
 </CsDataTable>

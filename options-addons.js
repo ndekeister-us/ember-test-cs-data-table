@@ -1,6 +1,6 @@
 const optionsEmberComposableHelpers = {
   'ember-composable-helpers': {
-    only: ['pick'],
+    only: ['dec', 'inc', 'pick', 'sort-by'],
   },
 };
 
