@@ -19,7 +19,7 @@ https://user-images.githubusercontent.com/56396753/172071156-0f825892-30a0-4f5f-
 
 * Ember.js v3.24 or above
 * Ember CLI v3.24 or above
-* Node.js v12 or above
+* Node.js v14 or above
 
 
 ## Installation
