@@ -1,62 +1,66 @@
-<div class="cs-data-table"
-  {{did-insert this.initialize}}
-  {{did-update this.initialize @allowColumnsCustomization @columns}}
->
-  {{#if this.isToolbarEnabled}}
-    <div class="cs-data-table-toolbar">
-      {{#if @allowColumnsCustomization}}
-        <CsDataTable::-Toolbar::-ColumnsCustomization
-          @columns={{this.columns}}
-          @isCustomizingColumns={{this.isCustomizingColumns}}
-          @onCustomizingEnd={{fn (mut this.isCustomizingColumns) false}}
-          @onCustomizingStart={{fn (mut this.isCustomizingColumns) true}}
-          @onResetColumns={{this.resetColumns}}
-        />
-      {{/if}}
-      {{#if this.isSearchEnabled}}
-        <CsDataTable::-Toolbar::-Searchbar
-          @debounce={{@searchDebounce}}
-          @onSearch={{fn (mut this.searchText)}}
-          @searchableColumns={{this.searchableColumns}}
-          @value={{this.searchText}}
-        />
-      {{/if}}
-    </div>
-  {{/if}}
-  <table>
-    <thead>
-    <tr>
-      {{#each (sort-by "order" this.columns) as |column index|}}
-        <CsDataTable::-Header::-Cell
-          @column={{column}}
-          @first={{eq index 0}}
-          @index={{index}}
-          @isCustomizingColumns={{this.isCustomizingColumns}}
-          @last={{eq index (dec @columns.length)}}
-          @onMove={{this.moveColumn}}
-          @onToggleVisibility={{fn (mut column.hidden)}}
-        />
-      {{/each}}
-    </tr>
-    </thead>
-    <tbody>
-    {{#if (is-empty @data)}}
-      {{yield (hash empty=(component "cs-data-table/-empty" nbCols=this.columns.length))}}
-    {{else if (is-empty this.data)}}
-      {{yield (hash noResult=(component "cs-data-table/-empty" nbCols=this.columns.length))}}
-    {{else}}
-      {{#each this.data as |item|}}
-        {{yield (hash
-                  row=(
-                    component "cs-data-table/-row"
-                    columns=this.columns
-                    isCustomizingColumns=this.isCustomizingColumns
-                    item=item
-                  )
-                )
-        }}
-      {{/each}}
+{{#if @columns.length}}
+  <div
+    class="cs-data-table"
+    data-test-cs-data-table
+    {{did-insert this.initialize}}
+    {{did-update this.initialize @allowColumnsCustomization @columns}}
+  >
+    {{#if this.isToolbarEnabled}}
+      <div class="cs-data-table-toolbar">
+        {{#if @allowColumnsCustomization}}
+          <CsDataTable::-Toolbar::-ColumnsCustomization
+            @columns={{this.columns}}
+            @isCustomizingColumns={{this.isCustomizingColumns}}
+            @onCustomizingEnd={{fn (mut this.isCustomizingColumns) false}}
+            @onCustomizingStart={{fn (mut this.isCustomizingColumns) true}}
+            @onResetColumns={{this.resetColumns}}
+          />
+        {{/if}}
+        {{#if this.isSearchEnabled}}
+          <CsDataTable::-Toolbar::-Searchbar
+            @debounce={{@searchDebounce}}
+            @onSearch={{fn (mut this.searchText)}}
+            @searchableColumns={{this.searchableColumns}}
+            @value={{this.searchText}}
+          />
+        {{/if}}
+      </div>
     {{/if}}
-    </tbody>
-  </table>
-</div>
+    <table>
+      <thead>
+      <tr>
+        {{#each (sort-by "order" this.columns) as |column index|}}
+          <CsDataTable::-Header::-Cell
+            @column={{column}}
+            @first={{eq index 0}}
+            @index={{index}}
+            @isCustomizingColumns={{this.isCustomizingColumns}}
+            @last={{eq index (dec @columns.length)}}
+            @onMove={{this.moveColumn}}
+            @onToggleVisibility={{fn (mut column.hidden)}}
+          />
+        {{/each}}
+      </tr>
+      </thead>
+      <tbody>
+      {{#if (is-empty @data)}}
+        {{yield (hash empty=(component "cs-data-table/-empty" nbCols=this.columns.length))}}
+      {{else if (is-empty this.data)}}
+        {{yield (hash noResult=(component "cs-data-table/-empty" nbCols=this.columns.length))}}
+      {{else}}
+        {{#each this.data as |item|}}
+          {{yield (hash
+                    row=(
+                      component "cs-data-table/-row"
+                      columns=this.columns
+                      isCustomizingColumns=this.isCustomizingColumns
+                      item=item
+                    )
+                  )
+          }}
+        {{/each}}
+      {{/if}}
+      </tbody>
+    </table>
+  </div>
+{{/if}}

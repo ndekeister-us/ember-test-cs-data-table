@@ -2,15 +2,17 @@
   id={{this.id}}
   class="cs-data-table-searchbar"
   {{did-insert this.initialize}}
+  data-test-searchbar
 >
-  <span id={{this.tooltipId}} title={{this.tooltip}}>(i)</span>
+  <span id={{this.tooltipId}} title={{this.tooltip}} data-test-info>(i)</span>
   <input
     type="text"
     value={{this.initialValue}}
     {{on "keyup" (pick "target.value" this.search)}}
     aria-labelledby={{this.tooltipId}}
+    data-test-input
   />
   {{#if @value}}
-    <button type="button" {{on "click" this.clear}}>X</button>
+    <button type="button" {{on "click" this.clear}} data-test-clear>X</button>
   {{/if}}
 </div>

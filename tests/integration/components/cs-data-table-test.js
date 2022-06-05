@@ -1,26 +1,18 @@
 import { module, test } from 'qunit';
-import { setupRenderingTest } from 'ember-test-cs-data-table/tests/helpers';
+import { setupRenderingTest } from 'dummy/tests/helpers';
 import { render } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
 
 module('Integration | Component | cs-data-table', function (hooks) {
   setupRenderingTest(hooks);
 
-  test('it renders', async function (assert) {
-    // Set any properties with this.set('myProperty', 'value');
-    // Handle any actions with this.set('myAction', function(val) { ... });
+  test('it renders nothing when we pass empty columns', async function (assert) {
+    this.columns = [];
+    this.data = [];
+    await render(
+      hbs`<CsDataTable @columns={{this.columns}} @data={{this.data}} />`
+    );
 
-    await render(hbs`<CsDataTable />`);
-
-    assert.dom(this.element).hasText('');
-
-    // Template block usage:
-    await render(hbs`
-      <CsDataTable>
-        template block text
-      </CsDataTable>
-    `);
-
-    assert.dom(this.element).hasText('template block text');
+    assert.dom('[data-test-cs-data-table]').doesNotExist();
   });
 });

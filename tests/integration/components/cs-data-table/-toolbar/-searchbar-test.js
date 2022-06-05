@@ -1,5 +1,5 @@
 import { module, test } from 'qunit';
-import { setupRenderingTest } from 'ember-test-cs-data-table/tests/helpers';
+import { setupRenderingTest } from 'dummy/tests/helpers';
 import { render } from '@ember/test-helpers';
 import { hbs } from 'ember-cli-htmlbars';
 
@@ -9,21 +9,35 @@ module(
     setupRenderingTest(hooks);
 
     test('it renders', async function (assert) {
-      // Set any properties with this.set('myProperty', 'value');
-      // Handle any actions with this.set('myAction', function(val) { ... });
+      this.searchableColumns = [
+        {
+          label: 'c1',
+        },
+        {
+          label: 'c2',
+        },
+      ];
 
-      await render(hbs`<CsDataTable::Toolbar::Searchbar />`);
+      await render(
+        hbs`<CsDataTable::-Toolbar::-Searchbar @searchableColumns={{this.searchableColumns}} />`
+      );
 
-      assert.dom(this.element).hasText('');
-
-      // Template block usage:
-      await render(hbs`
-      <CsDataTable::Toolbar::Searchbar>
-        template block text
-      </CsDataTable::Toolbar::Searchbar>
-    `);
-
-      assert.dom(this.element).hasText('template block text');
+      assert
+        .dom('[data-test-searchbar] ')
+        .hasClass('cs-data-table-searchbar', 'Component have correct class');
+      assert
+        .dom('[data-test-info]')
+        .hasAttribute(
+          'title',
+          'It will look for matches in following columns: c1, c2',
+          'Searchable columns are listed correctly in the info element'
+        );
+      assert
+        .dom('[data-test-input]')
+        .hasValue('', 'Search value is empty by default');
+      assert
+        .dom('[data-test-clear]')
+        .doesNotExist('Clear button is not displayed');
     });
   }
 );
