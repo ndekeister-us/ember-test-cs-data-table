@@ -16,6 +16,10 @@ table.cs-data-table {
   td {
     padding: .5em;
     border: $border;
+
+    &.empty {
+      text-align: center;
+    }
   }
 
   tbody tr:nth-of-type(odd) {

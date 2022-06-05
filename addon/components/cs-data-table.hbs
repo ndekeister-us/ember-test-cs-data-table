@@ -7,8 +7,12 @@
   </tr>
   </thead>
   <tbody>
-  {{#each @data as |item|}}
-    {{yield (hash row=(component "cs-data-table/-row" item=item))}}
-  {{/each}}
+  {{#if (is-empty @data)}}
+    {{yield (hash empty=(component "cs-data-table/-empty" nbCols=@columns.length))}}
+  {{else}}
+    {{#each @data as |item|}}
+      {{yield (hash row=(component "cs-data-table/-row" item=item))}}
+    {{/each}}
+  {{/if}}
   </tbody>
 </table>

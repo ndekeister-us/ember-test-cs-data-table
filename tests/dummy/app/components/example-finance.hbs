@@ -1,6 +1,19 @@
 <h3>Financial data</h3>
 
+<p>
+  <button {{on "click" this.toggleData}}>
+    {{#if (is-empty this.data)}}
+      Populate with data
+    {{else}}
+      Clear data
+    {{/if}}
+  </button>
+</p>
+
 <CsDataTable @columns={{this.columns}} @data={{this.data}} as |table|>
+  <table.empty>
+    There is no data to display
+  </table.empty>
   <table.row as |row|>
     <row.cell @key="id" as |item|>{{item.id}}</row.cell>
     <row.cell @key="name" as |item|>{{item.name}}</row.cell>

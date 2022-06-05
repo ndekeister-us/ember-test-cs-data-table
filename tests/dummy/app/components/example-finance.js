@@ -1,6 +1,7 @@
 import Component from '@glimmer/component';
 import { faker } from '@faker-js/faker';
 import { action } from '@ember/object';
+import { tracked } from '@glimmer/tracking';
 
 export default class ExampleFinanceComponent extends Component {
   columns = [
@@ -34,7 +35,7 @@ export default class ExampleFinanceComponent extends Component {
     },
   ];
 
-  data = [...Array(10).keys()].map(() => {
+  fullData = [...Array(10).keys()].map(() => {
     const expirationDate = faker.date.future();
     return {
       id: faker.finance.account(),
@@ -50,10 +51,21 @@ export default class ExampleFinanceComponent extends Component {
     };
   });
 
+  @tracked data = this.fullData;
+
   @action
   showSecretData(item) {
     window.alert(
       `CVV number: ${item.creditCardCVV}\nExpire on: ${item.creditCardExpirationDate}`
     );
+  }
+
+  @action
+  toggleData() {
+    if (!this.data || this.data.length === 0) {
+      this.data = this.fullData;
+    } else {
+      this.data = [];
+    }
   }
 }
