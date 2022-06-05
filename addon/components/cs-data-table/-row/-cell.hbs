@@ -1,5 +1,5 @@
 {{#if (eq @column.key @key)}}
   {{#if (or @isCustomizingColumns (not @column.hidden))}}
-    <td ...attributes>{{yield @item}}</td>
+    <td ...attributes data-test-cell-index={{@index}}>{{yield @item}}</td>
   {{/if}}
 {{/if}}
