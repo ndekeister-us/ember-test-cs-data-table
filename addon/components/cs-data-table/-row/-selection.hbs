@@ -1,0 +1,10 @@
+<td data-test-cell-selection>
+  <input
+    type="checkbox"
+    title={{this.selectionTooltip}}
+    aria-label={{this.selectionTooltip}}
+    checked={{@item._selected}}
+    {{on "change" (fn @onItemSelectionChange (not @item._selected))}}
+    data-test-selection-checkbox
+  />
+</td>

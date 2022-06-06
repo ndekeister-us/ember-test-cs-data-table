@@ -3,6 +3,7 @@ import { setupRenderingTest } from 'dummy/tests/helpers';
 import {
   click,
   fillIn,
+  find,
   render,
   settled,
   triggerKeyEvent,
@@ -159,6 +160,46 @@ module('Integration | Component | cs-data-table', function (hooks) {
   });
 
   module('toolbar', () => {
+    module('action', () => {
+      test('it yield toolbar action correctly', async function (assert) {
+        this.columns = [
+          {
+            key: 'col1',
+            label: 'Column 1',
+          },
+        ];
+        this.data = [
+          {
+            col1: 'val1',
+          },
+        ];
+
+        await render(
+          hbs`<CsDataTable @allowSelection={{true}} @columns={{this.columns}} @data={{this.data}} as |table|>
+                <table.toolbarActions as |selectedItems|>
+                  <button type="button" disabled={{lt selectedItems.length 1}}>Action</button>
+                </table.toolbarActions>
+                <table.row as |row|>
+                  <row.cell @key="col1" as |item|>{{item.col1}}</row.cell>
+                </table.row>
+              </CsDataTable>`
+        );
+
+        assert
+          .dom('[data-test-toolbar] [data-test-actions]')
+          .exists('toolbarActions is displayed');
+        assert
+          .dom('[data-test-toolbar] [data-test-actions] button')
+          .isDisabled();
+
+        await click('[data-test-row-index="0"] [data-test-selection-checkbox]');
+
+        assert
+          .dom('[data-test-toolbar] [data-test-actions] button')
+          .isNotDisabled();
+      });
+    });
+
     module('columnsCustomization', () => {
       test('it dont display customization button correctly', async function (assert) {
         this.columns = [
@@ -571,6 +612,159 @@ module('Integration | Component | cs-data-table', function (hooks) {
       });
     });
 
+    module('selection', () => {
+      test('it dont display selection checkboxes when @allowSelection is false', async function (assert) {
+        this.allowSelection = false;
+        this.columns = [
+          {
+            key: 'col1',
+            label: 'test',
+          },
+        ];
+        this.data = [
+          {
+            col1: 'value',
+          },
+        ];
+
+        await render(
+          hbs`<CsDataTable @allowSelection={{this.allowSelection}} @columns={{this.columns}} @data={{this.data}} as |table|>
+                <table.row as |row|>
+                  <row.cell @key="col1" as |item|>{{item.col1}}</row.cell>
+                </table.row>
+              </CsDataTable>`
+        );
+
+        assert.dom('[data-test-header-selection]').doesNotExist();
+        assert.dom('[data-test-cell-selection]').doesNotExist();
+      });
+
+      test('it dont display selection checkboxes when no data', async function (assert) {
+        this.allowSelection = true;
+        this.columns = [
+          {
+            key: 'col1',
+            label: 'test',
+          },
+        ];
+        this.data = [];
+
+        await render(
+          hbs`<CsDataTable @allowSelection={{this.allowSelection}} @columns={{this.columns}} @data={{this.data}} as |table|>
+                <table.row as |row|>
+                  <row.cell @key="col1" as |item|>{{item.col1}}</row.cell>
+                </table.row>
+              </CsDataTable>`
+        );
+
+        assert.dom('[data-test-header-selection]').doesNotExist();
+        assert.dom('[data-test-cell-selection]').doesNotExist();
+      });
+
+      test('it handle selection correctly', async function (assert) {
+        this.allowSelection = true;
+        this.columns = [
+          {
+            key: 'col1',
+            label: 'test',
+          },
+        ];
+        this.data = [
+          {
+            col1: 'value1',
+          },
+          {
+            col1: 'value2',
+            _selected: true,
+          },
+        ];
+
+        await render(
+          hbs`<CsDataTable @allowSelection={{this.allowSelection}} @columns={{this.columns}} @data={{this.data}} as |table|>
+                <table.row as |row|>
+                  <row.cell @key="col1" as |item|>{{item.col1}}</row.cell>
+                </table.row>
+              </CsDataTable>`
+        );
+
+        assert
+          .dom('[data-test-row-index] [data-test-cell-selection]')
+          .exists(
+            { count: 2 },
+            'There is 2 rows, each having selection enabled'
+          );
+
+        assert
+          .dom('[data-test-row-index] [data-test-selection-checkbox]:checked')
+          .exists({ count: 1 }, 'There is 1 row selected');
+        assert
+          .dom('[data-test-header-selection] [data-test-selection-checkbox]')
+          .isNotChecked('Global checkbox is not checked');
+        let globalCheckbox = await find(
+          '[data-test-header-selection] [data-test-selection-checkbox]'
+        );
+        assert.true(
+          globalCheckbox.indeterminate,
+          'Global checkbox is in indeterminate state'
+        );
+
+        // Click on selected checkbox
+        await click('[data-test-row-index="1"] [data-test-selection-checkbox]');
+        assert
+          .dom('[data-test-header-selection] [data-test-selection-checkbox]')
+          .isNotChecked('Global checkbox is not checked');
+        globalCheckbox = await find(
+          '[data-test-header-selection] [data-test-selection-checkbox]'
+        );
+        assert.false(
+          globalCheckbox.indeterminate,
+          'Global checkbox is not in indeterminate state'
+        );
+
+        // Select all checkbox
+        await click('[data-test-row-index="0"] [data-test-selection-checkbox]');
+        await click('[data-test-row-index="1"] [data-test-selection-checkbox]');
+
+        assert
+          .dom('[data-test-row-index] [data-test-selection-checkbox]:checked')
+          .exists({ count: 2 }, 'There are 2 rows selected');
+        assert
+          .dom('[data-test-header-selection] [data-test-selection-checkbox]')
+          .isChecked('Global checkbox is checked as all raws are selected');
+        globalCheckbox = await find(
+          '[data-test-header-selection] [data-test-selection-checkbox]'
+        );
+        assert.false(
+          globalCheckbox.indeterminate,
+          'Global checkbox is not in indeterminate state'
+        );
+
+        // Click on global checkbox
+        await click(
+          '[data-test-header-selection] [data-test-selection-checkbox]'
+        );
+
+        assert
+          .dom('[data-test-row-index] [data-test-selection-checkbox]:checked')
+          .doesNotExist('There is 0 row selected');
+        assert
+          .dom('[data-test-header-selection] [data-test-selection-checkbox]')
+          .isNotChecked('Global checkbox is not checked');
+
+        // Click on global checkbox
+        await click(
+          '[data-test-header-selection] [data-test-selection-checkbox]'
+        );
+
+        assert
+          .dom('[data-test-row-index] [data-test-selection-checkbox]:checked')
+          .exists({ count: 2 }, 'There are 2 rows selected');
+        assert
+          .dom('[data-test-header-selection] [data-test-selection-checkbox]')
+          .isChecked('Global checkbox is checked as all raws are selected');
+      });
+    });
+
     module('filtering', () => {
       test('it hides searchbar is there is no @data', async function (assert) {
         this.columns = [
@@ -670,6 +864,40 @@ module('Integration | Component | cs-data-table', function (hooks) {
 
         assert.dom('[data-test-cs-data-table]').exists();
         assert.dom('[data-test-searchbar]').doesNotExist();
+      });
+
+      test('it disable global checkbox if searchText is not empty', async function (assert) {
+        this.columns = [
+          {
+            key: 'col1',
+            hidden: false,
+            searchable: true,
+          },
+        ];
+        this.data = [
+          {
+            col1: 'val1',
+          },
+        ];
+
+        await render(
+          hbs`<CsDataTable @allowSelection={{true}} @columns={{this.columns}} @data={{this.data}} @debounce="0" as |table|>
+                  <table.row as |row|>
+                    <row.cell @key="col1" as |item|>{{item.col1}}</row.cell>
+                  </table.row>
+                </CsDataTable>`
+        );
+
+        assert
+          .dom('[data-test-header-selection] [data-test-selection-checkbox]')
+          .isNotDisabled();
+
+        await fillIn('[data-test-input]', 'v');
+        await triggerKeyEvent('[data-test-input]', 'keyup', 'Enter');
+
+        assert
+          .dom('[data-test-header-selection] [data-test-selection-checkbox]')
+          .isDisabled();
       });
 
       test('it filters only visible and searchable columns', async function (assert) {

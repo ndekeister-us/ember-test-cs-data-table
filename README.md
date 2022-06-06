@@ -7,8 +7,10 @@ It provides a `<CsDataTable>` component allowing to display data in a table with
 - columns customization, end-user can
   - re-order columns
   - manage columns visibility (hide or display some columns)
-- fully customizable cell content (you can use your own components)
+- fully customizable cell content (you can easily use your own components)
 - customize display of "empty data" and "no search results" state
+- rows selection
+- custom actions on selected rows
 
 ## Demo
 
@@ -41,8 +43,9 @@ https://user-images.githubusercontent.com/56396753/172071156-0f825892-30a0-4f5f-
 
 `@data` is an array of items to display
 
-You can set two optional arguments
+You can set three optional arguments
 - `@allowColumnsCustomization` (`boolean`), when set to `true` will display customizations button to the end-user, allowing him to manage column visibility and order
+- `@allowSelection` (`boolean`), when set to `true` will allow row selection
 - `@debounce` (`number` of milliseconds) allowing to debounce the search by `x`ms (by default `300`ms)
 
 ### Basic usage
@@ -108,14 +111,26 @@ export default class ExampleComponent extends Component {
 
 ### Advanced usage
 
-Display columns data and
-- hide one `amount` column by default
-- enable columns customizations
-- enable filtering on `id` and `name`
-- set debounce value for search to 200ms
+All features
+- display columns
+  - hide `amount` column by default 
+- display data in different way (yielding props / using components, via `<row.cell>`)
+- enable columns customization (via `@allowColumnsCustomization`)
+  - ordering
+  - visibility management
+- slot no data message (via `<table.empty>`)
+- enable filtering on `id` and `name` columns
+  - set search debounce value to 200m via `@debounce`
+  - slot no result message (via `<table.noResult>`)
+- enable rows selection (via `@allowSelection`)
+  - loads with one row pre-selected
+- enable custom action on selected rows (via `<table.toolbarActions>`)
 
 ```hbs
-<CsDataTable @allowColumnsCustomization="true" @columns={{this.columns}} @data={{this.data}} @debounce="100" as |table|>
+<CsDataTable @allowColumnsCustomization="true" @allowSelection="true" @columns={{this.columns}} @data={{this.data}} @debounce="100" as |table|>
+  <table.toolbarActions as |selectedItems|>
+    <button type="button" disabled={{lt selectedItems.length 1}} {{on "click" (fn this.myAction selectedItems)}}>My action on selected items</button>
+  </table.toolbarActions>
   <table.empty>
     There is no data to display
   </table.empty>
@@ -135,6 +150,7 @@ Display columns data and
 
 ```js
 import Component from '@glimmer/component';
+import { action } from '@ember/object';
 
 export default class ExampleComponent extends Component {
   get columns() {
@@ -171,8 +187,14 @@ export default class ExampleComponent extends Component {
         id: 2,
         name: 'Name 2',
         amount: 20,
+        _selected: true,
       },
     ];
+  }
+	
+	@action
+  myAction(selectedItems) {
+    console.log('selectedItems', selectedItems)
   }
 }
 ```

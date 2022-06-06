@@ -27,6 +27,11 @@ module('Acceptance | application', function (hooks) {
           '[data-test-financial-data-table] [data-test-demo-actions] [data-test-toggle-customization]'
         )
         .hasText('Disable columns customization');
+      assert
+        .dom(
+          '[data-test-financial-data-table] [data-test-demo-actions] [data-test-toggle-selection]'
+        )
+        .hasText('Disable selection');
 
       // Data-table content
       assert
@@ -37,6 +42,12 @@ module('Acceptance | application', function (hooks) {
       assert
         .dom('[data-test-financial-data-table] [data-test-searchbar]')
         .exists('Searchbar is displayed in data-table');
+      assert
+        .dom(
+          '[data-test-financial-data-table] [data-test-header-selection] [data-test-selection-checkbox]'
+        )
+        .exists('Global checkbox is displayed')
+        .isNotChecked();
       assert
         .dom('[data-test-financial-data-table] [data-test-header-cell-index]')
         .exists({ count: 7 });
@@ -229,6 +240,47 @@ module('Acceptance | application', function (hooks) {
           '[data-test-financial-data-table] [data-test-columns-customization]'
         )
         .exists('Columns customization element is displayed again');
+    });
+
+    test('it enable and disable selecton correctly', async function (assert) {
+      await visit('/');
+
+      assert
+        .dom(
+          '[data-test-financial-data-table] [data-test-demo-actions] [data-test-toggle-selection]'
+        )
+        .hasText('Disable selection');
+      assert
+        .dom('[data-test-financial-data-table] [data-test-header-selection]')
+        .exists('Selection element is displayed in data-table');
+
+      // Disable selection
+      await click(
+        '[data-test-financial-data-table] [data-test-demo-actions] [data-test-toggle-selection]'
+      );
+
+      assert
+        .dom(
+          '[data-test-financial-data-table] [data-test-demo-actions] [data-test-toggle-selection]'
+        )
+        .hasText('Enable selection');
+      assert
+        .dom('[data-test-financial-data-table] [data-test-header-selection]')
+        .doesNotExist('Selection element is not displayed anymore');
+
+      // Enable selection
+      await click(
+        '[data-test-financial-data-table] [data-test-demo-actions] [data-test-toggle-selection]'
+      );
+
+      assert
+        .dom(
+          '[data-test-financial-data-table] [data-test-demo-actions] [data-test-toggle-selection]'
+        )
+        .hasText('Disable selection');
+      assert
+        .dom('[data-test-financial-data-table] [data-test-header-selection]')
+        .exists('Selection element is displayed again');
     });
   });
 });

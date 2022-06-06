@@ -1,4 +1,7 @@
 <tr ...attributes data-test-row-index={{@index}}>
+  {{#if @allowSelection}}
+    <CsDataTable::-Row::-Selection @item={{@item}} @onItemSelectionChange={{@onItemSelectionChange}} />
+  {{/if}}
   {{#each (sort-by "order" @columns) as |column index|}}
     {{yield (hash
               cell=(

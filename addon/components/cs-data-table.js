@@ -41,27 +41,39 @@ class Column {
   }
 }
 
+class Item {
+  @tracked _selected = false;
+}
+
 export default class CsDataTableComponent extends Component {
   @tracked columns = [];
+
+  @tracked data = [];
 
   @tracked isCustomizingColumns = false;
 
   @tracked searchText = '';
 
-  get data() {
+  get displayedData() {
     if (this.isSearchEnabled && this.searchText.trim() !== '') {
       let searchText = this.searchText.trim().toLowerCase();
       let searchableColumnsKeys = this.searchableColumns.map(
         (column) => column.searchKey
       );
-      return this.args.data.filter((item) => {
+      return this.data.filter((item) => {
         return searchableColumnsKeys.some((key) => {
           return item[key].toString().toLowerCase().includes(searchText);
         });
       });
     } else {
-      return this.args.data;
+      return this.data;
     }
+  }
+
+  get selectedItems() {
+    return this.args.allowSelection
+      ? this.data.filter((item) => item._selected)
+      : [];
   }
 
   get searchableColumns() {
@@ -69,7 +81,7 @@ export default class CsDataTableComponent extends Component {
   }
 
   get isSearchEnabled() {
-    return this.searchableColumns.length > 0 && this.args.data.length > 0;
+    return this.searchableColumns.length > 0 && this.data.length > 0;
   }
 
   get isToolbarEnabled() {
@@ -77,14 +89,19 @@ export default class CsDataTableComponent extends Component {
   }
 
   @action
-  initialize() {
+  initializeColumns() {
     this.columns = this.args.columns
       .filter((column) => !!column.key)
       .map((column, i) => new Column(column, i));
+  }
 
-    if (!this.args.allowColumnsCustomization) {
-      this.isCustomizingColumns = false;
-    }
+  @action
+  initializeData() {
+    this.data = this.args.data.map((item) => {
+      let newItem = new Item();
+      Object.assign(newItem, item);
+      return newItem;
+    });
   }
 
   @action
@@ -103,9 +120,32 @@ export default class CsDataTableComponent extends Component {
   }
 
   @action
+  onAllowColumnsCustomization() {
+    if (!this.args.allowColumnsCustomization) {
+      // Handle the case where column customization can be ongoing before @allowColumnsCustomization is set to "false",
+      //  in that case stop the current column customization and reset columns to initial state
+      this.isCustomizingColumns = false;
+      this.resetColumns();
+    }
+  }
+
+  @action
   resetColumns() {
     this.columns.forEach((column) => {
       column.reset();
     });
+  }
+
+  @action
+  toggleItemsSelection() {
+    if (this.selectedItems.length === this.data.length) {
+      this.data.forEach((item) => {
+        item._selected = false;
+      });
+    } else {
+      this.data.forEach((item) => {
+        item._selected = true;
+      });
+    }
   }
 }

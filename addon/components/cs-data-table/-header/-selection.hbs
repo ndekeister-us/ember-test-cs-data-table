@@ -1,0 +1,16 @@
+<th
+  id={{this.id}}
+  {{did-insert this.handleIndeterminateState}}
+  {{did-update this.handleIndeterminateState @nbSelectedItems}}
+  data-test-header-selection
+>
+  <input
+    type="checkbox"
+    title={{this.selectionTooltip}}
+    aria-label={{this.selectionTooltip}}
+    checked={{eq @nbSelectedItems @nbItems}}
+    disabled={{@disabled}}
+    {{on "click" @onToggleSelection}}
+    data-test-selection-checkbox
+  />
+</th>

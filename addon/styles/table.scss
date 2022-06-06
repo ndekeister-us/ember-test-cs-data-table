@@ -4,10 +4,19 @@ $border: 1px solid $header-background-color;
 .cs-data-table {
   .cs-data-table-toolbar {
     display: flex;
-    padding: 10px;
     background-color: lighten($header-background-color, 10%);
+    border: $border;
 
-    .cs-data-table-columns-customization {
+    > * {
+      padding: 10px;
+    }
+
+    .cs-data-table-actions {
+      background-color: #FFF;
+      border-right: $border;
+    }
+
+    .cs-data-table-actions, .cs-data-table-columns-customization {
       button {
         margin-right: 5px;
       }

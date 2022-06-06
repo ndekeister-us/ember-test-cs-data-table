@@ -6,6 +6,8 @@ import { tracked } from '@glimmer/tracking';
 export default class ExampleFinanceComponent extends Component {
   @tracked allowColumnsCustomization = true;
 
+  @tracked allowSelection = true;
+
   @tracked enableFiltering = true;
 
   @tracked searchDebounce = '500';
@@ -72,6 +74,13 @@ export default class ExampleFinanceComponent extends Component {
   });
 
   @tracked data = this.fullData;
+
+  @action
+  emailAll(selectedItems) {
+    window.alert(
+      `Sending email for: ${selectedItems.map((item) => item.email).join(', ')}`
+    );
+  }
 
   @action
   showSecretData(item) {

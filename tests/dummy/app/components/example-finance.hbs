@@ -35,14 +35,26 @@
       {{/if}}
       columns customization
     </button>
+    <button type="button" data-test-toggle-selection {{on "click" (fn (mut this.allowSelection) (not this.allowSelection))}}>
+      {{#if this.allowSelection}}
+        Disable
+      {{else}}
+        Enable
+      {{/if}}
+      selection
+    </button>
   </p>
 
   <CsDataTable
     @allowColumnsCustomization={{this.allowColumnsCustomization}}
+    @allowSelection={{this.allowSelection}}
     @columns={{this.columns}}
     @data={{this.data}}
     @searchDebounce={{this.searchDebounce}} as |table|
   >
+    <table.toolbarActions as |selectedItems|>
+      <button type="button" disabled={{lt selectedItems.length 1}} {{on "click" (fn this.emailAll selectedItems)}}>Send email</button>
+    </table.toolbarActions>
     <table.empty>
       There is no data to display
     </table.empty>

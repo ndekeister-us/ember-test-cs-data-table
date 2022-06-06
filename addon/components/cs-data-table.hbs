@@ -3,33 +3,43 @@
     ...attributes
     class="cs-data-table"
     data-test-cs-data-table
-    {{did-insert this.initialize}}
-    {{did-update this.initialize @allowColumnsCustomization @columns}}
+    {{did-insert this.initializeColumns}}
+    {{did-insert this.initializeData}}
+    {{did-update this.initializeColumns @columns}}
+    {{did-update this.initializeData @data}}
+    {{did-update this.onAllowColumnsCustomization @allowColumnsCustomization}}
   >
-    {{#if this.isToolbarEnabled}}
-      <div class="cs-data-table-toolbar" data-test-toolbar>
-        {{#if @allowColumnsCustomization}}
-          <CsDataTable::-Toolbar::-ColumnsCustomization
-            @columns={{this.columns}}
-            @isCustomizingColumns={{this.isCustomizingColumns}}
-            @onCustomizingEnd={{fn (mut this.isCustomizingColumns) false}}
-            @onCustomizingStart={{fn (mut this.isCustomizingColumns) true}}
-            @onResetColumns={{this.resetColumns}}
-          />
-        {{/if}}
-        {{#if this.isSearchEnabled}}
-          <CsDataTable::-Toolbar::-Searchbar
-            @debounce={{@searchDebounce}}
-            @onSearch={{fn (mut this.searchText)}}
-            @searchableColumns={{this.searchableColumns}}
-            @value={{this.searchText}}
-          />
-        {{/if}}
-      </div>
-    {{/if}}
+    <div class="cs-data-table-toolbar" data-test-toolbar>
+      {{yield (hash toolbarActions=(component "cs-data-table/-toolbar/-actions" selectedItems=this.selectedItems))}}
+      {{#if @allowColumnsCustomization}}
+        <CsDataTable::-Toolbar::-ColumnsCustomization
+          @columns={{this.columns}}
+          @isCustomizingColumns={{this.isCustomizingColumns}}
+          @onCustomizingEnd={{fn (mut this.isCustomizingColumns) false}}
+          @onCustomizingStart={{fn (mut this.isCustomizingColumns) true}}
+          @onResetColumns={{this.resetColumns}}
+        />
+      {{/if}}
+      {{#if this.isSearchEnabled}}
+        <CsDataTable::-Toolbar::-Searchbar
+          @debounce={{@searchDebounce}}
+          @onSearch={{fn (mut this.searchText)}}
+          @searchableColumns={{this.searchableColumns}}
+          @value={{this.searchText}}
+        />
+      {{/if}}
+    </div>
     <table>
       <thead>
       <tr>
+        {{#if (and @allowSelection (not (is-empty this.data)))}}
+          <CsDataTable::-Header::-Selection
+            @disabled={{not (is-empty this.searchText)}}
+            @nbItems={{@data.length}}
+            @nbSelectedItems={{this.selectedItems.length}}
+            @onToggleSelection={{this.toggleItemsSelection}}
+          />
+        {{/if}}
         {{#each (sort-by "order" this.columns) as |column index|}}
           <CsDataTable::-Header::-Cell
             @column={{column}}
@@ -44,19 +54,21 @@
       </tr>
       </thead>
       <tbody>
-      {{#if (is-empty @data)}}
+      {{#if (is-empty this.data)}}
         {{yield (hash empty=(component "cs-data-table/-empty" nbCols=this.columns.length type="empty"))}}
-      {{else if (is-empty this.data)}}
+      {{else if (is-empty this.displayedData)}}
         {{yield (hash noResult=(component "cs-data-table/-empty" nbCols=this.columns.length type="no-result"))}}
       {{else}}
-        {{#each this.data as |item index|}}
+        {{#each this.displayedData as |item index|}}
           {{yield (hash
                     row=(
                       component "cs-data-table/-row"
+                      allowSelection=@allowSelection
                       columns=this.columns
                       index=index
                       isCustomizingColumns=this.isCustomizingColumns
                       item=item
+                      onItemSelectionChange=(fn (mut item._selected))
                     )
                   )
           }}
