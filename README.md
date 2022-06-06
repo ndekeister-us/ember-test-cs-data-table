@@ -14,7 +14,7 @@ It provides a `<CsDataTable>` component allowing to display data in a table with
 
 ## Demo
 
-https://user-images.githubusercontent.com/56396753/172071156-0f825892-30a0-4f5f-88f4-22c6d8860ab0.mov
+https://user-images.githubusercontent.com/56396753/172222699-be4d07fb-0ab3-4ef0-863d-57ad48ed96a0.mov
 
 
 ## Compatibility
