@@ -10,6 +10,7 @@ module(
 
     hooks.beforeEach(function () {
       this.column = {
+        key: 'test',
         hidden: false,
         label: 'Some label',
         order: 4,
@@ -24,6 +25,7 @@ module(
 
       assert
         .dom('th[data-test-header-cell-index="3"]')
+        .hasAttribute('data-test-header-cell-key', 'test')
         .hasText('Some label', 'It display column label');
     });
 
@@ -70,6 +72,107 @@ module(
       assert
         .dom('th[data-test-header-cell-index="2"]')
         .exists('Cell is displayed');
+    });
+
+    test('display sortable column correctly', async function (assert) {
+      this.onSort = () => {
+        assert.step('onSort');
+      };
+      this.set('column.sortable', false);
+      this.isCustomizingColumns = false;
+      this.sortColumnKey = '';
+      this.sortDirection = 'asc';
+
+      await render(
+        hbs`<CsDataTable::-Header::-Cell
+            @column={{this.column}}
+            @columnKey
+            @index="2"
+            @isCustomizingColumns={{this.isCustomizingColumns}}
+            @sortColumnKey={{this.sortColumnKey}}
+            @sortDirection={{this.sortDirection}}
+            @onMove={{this.noop}}
+            @onSort={{this.onSort}}
+            @onToggleVisibility={{this.noop}}
+          />`
+      );
+
+      // Column is not sortable
+      assert
+        .dom('th')
+        .doesNotHaveAria(
+          'sort',
+          'aria-sort is not added when column is not sortable'
+        );
+
+      assert
+        .dom('[data-test-sort-button]')
+        .doesNotExist('sortable button dont exist when column is not sortable');
+
+      // Column is sortable
+      this.set('column.sortable', true);
+      await settled();
+
+      assert
+        .dom('th')
+        .hasAria(
+          'sort',
+          'none',
+          'aria-sort is correctly set when column is sortable'
+        );
+
+      assert
+        .dom('[data-test-sort-button] [data-test-label]')
+        .hasText('Some label', 'Label is displayed inside button');
+      assert
+        .dom('[data-test-sort-button] [data-test-sort-direction]')
+        .doesNotExist('Sort icon is not displayed as column is not sorted');
+
+      // Column is sortable and sorted in ascending order
+      this.set('sortColumnKey', this.column.key);
+      this.set('sortDirection', 'asc');
+
+      await settled();
+
+      assert
+        .dom('th')
+        .hasAria(
+          'sort',
+          'ascending',
+          'aria-sort is correctly when column is sorted in ascending order'
+        );
+      assert
+        .dom('[data-test-sort-button] [data-test-sort-direction]')
+        .hasText(
+          '⇡',
+          'We have sort by descending icon in sort button when column is sorted in ascending order'
+        );
+
+      // Column is sortable and sorted in descending order
+      this.set('sortColumnKey', this.column.key);
+      this.set('sortDirection', 'desc');
+
+      await settled();
+
+      assert
+        .dom('th')
+        .hasAria(
+          'sort',
+          'descending',
+          'aria-sort is correctly when column is sorted in descending order'
+        );
+      assert
+        .dom('[data-test-sort-button] [data-test-sort-direction]')
+        .hasText(
+          '⇣',
+          'We have sort by ascending icon in sort button when column is sorted in descending order'
+        );
+
+      assert.verifySteps([]);
+
+      await click('[data-test-sort-button]');
+
+      assert.verifySteps(['onSort'], 'It calls onSort correctly');
     });
 
     module('with @isCustomizingColumns set to true', () => {

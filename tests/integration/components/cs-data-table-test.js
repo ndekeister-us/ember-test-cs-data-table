@@ -1043,5 +1043,343 @@ module('Integration | Component | cs-data-table', function (hooks) {
         });
       });
     });
+
+    module('sorting', () => {
+      test('it display sort button only on sortable columns', async function (assert) {
+        this.columns = [
+          {
+            key: 'notSortable1',
+            label: 'Not Sortable 1',
+            sortable: false,
+          },
+          {
+            key: 'notSortable2',
+            label: 'Not Sortable 2',
+          },
+          {
+            key: 'sortable',
+            label: 'Sortable',
+            sortable: true,
+          },
+        ];
+        this.data = [
+          {
+            notSortable1: 'test',
+          },
+        ];
+
+        await render(
+          hbs`<CsDataTable @columns={{this.columns}} @data={{this.data}} as |table|>
+                <table.row as |row|>
+                  <row.cell @key="notSortable1" as |item|>{{item.notSortable1}}</row.cell>
+                </table.row>
+              </CsDataTable>`
+        );
+
+        assert
+          .dom(
+            '[data-test-header-cell-key="notSortable1"] [data-test-sort-button]'
+          )
+          .doesNotExist();
+        assert
+          .dom(
+            '[data-test-header-cell-key="notSortable2"] [data-test-sort-button]'
+          )
+          .doesNotExist();
+        assert
+          .dom('[data-test-header-cell-key="sortable"] [data-test-sort-button]')
+          .exists();
+      });
+
+      test('it makes initial sort correctly if set on column', async function (assert) {
+        this.columns = [
+          {
+            key: 'sortable1',
+            label: 'Sortable 1',
+            sortable: true,
+            initialSort: 'desc',
+          },
+          {
+            key: 'sortable2',
+            label: 'Sortable 2',
+            sortable: true,
+          },
+        ];
+        this.data = [
+          {
+            sortable1: 'b',
+            sortable2: 'b',
+          },
+          {
+            sortable1: 'a',
+            sortable2: 'a',
+          },
+        ];
+
+        await render(
+          hbs`<CsDataTable @columns={{this.columns}} @data={{this.data}} as |table|>
+                <table.row as |row|>
+                  <row.cell @key="sortable1" as |item|>{{item.sortable1}}</row.cell>
+                  <row.cell @key="sortable2" as |item|>{{item.sortable2}}</row.cell>
+                </table.row>
+              </CsDataTable>`
+        );
+
+        assert
+          .dom('[data-test-header-cell-key="sortable1"]')
+          .hasAria(
+            'sort',
+            'descending',
+            'Column 1 is sorted by descending order by default'
+          );
+        assert
+          .dom('[data-test-header-cell-key="sortable2"]')
+          .hasAria(
+            'sort',
+            'none',
+            'Column 2 is sortable but not sorted by default'
+          );
+      });
+
+      test('it sort correctly', async function (assert) {
+        this.columns = [
+          {
+            key: 'sortable1',
+            label: 'Sortable 1',
+            sortable: true,
+          },
+          {
+            key: 'sortable2',
+            label: 'Sortable 2',
+            sortable: true,
+          },
+        ];
+        this.data = [
+          {
+            sortable1: 'b',
+            sortable2: '1',
+          },
+          {
+            sortable1: 'a',
+            sortable2: '2',
+          },
+        ];
+
+        await render(
+          hbs`<CsDataTable @columns={{this.columns}} @data={{this.data}} as |table|>
+                <table.row as |row|>
+                  <row.cell @key="sortable1" as |item|>{{item.sortable1}}</row.cell>
+                  <row.cell @key="sortable2" as |item|>{{item.sortable2}}</row.cell>
+                </table.row>
+              </CsDataTable>`
+        );
+
+        // By default columns are sortable but none is sorted
+        assert
+          .dom('[data-test-header-cell-key][aria-sort="none"]')
+          .exists({ count: 2 }, 'Two columns are sortable but none is sorted');
+        assert
+          .dom('[data-test-row-index="0"] [data-test-cell-index="0"]')
+          .hasText('b');
+        assert
+          .dom('[data-test-row-index="1"] [data-test-cell-index="0"]')
+          .hasText('a');
+        assert
+          .dom('[data-test-row-index="0"] [data-test-cell-index="1"]')
+          .hasText('1');
+        assert
+          .dom('[data-test-row-index="1"] [data-test-cell-index="1"]')
+          .hasText('2');
+
+        // Sort first column
+        await click(
+          '[data-test-header-cell-key="sortable1"] [data-test-sort-button]'
+        );
+
+        // First column is sorted in ascending order and data of first column is sorted correctly
+        assert
+          .dom('[data-test-header-cell-key="sortable1"]')
+          .hasAria('sort', 'ascending')
+          .hasText('⇡ Sortable 1');
+        assert
+          .dom('[data-test-row-index="0"] [data-test-cell-index="0"]')
+          .hasText('a');
+        assert
+          .dom('[data-test-row-index="1"] [data-test-cell-index="0"]')
+          .hasText('b');
+
+        // Sort again first column
+        await click(
+          '[data-test-header-cell-key="sortable1"] [data-test-sort-button]'
+        );
+
+        // First column is sorted in descending order and data of first column is sorted correctly
+        assert
+          .dom('[data-test-header-cell-key="sortable1"]')
+          .hasAria('sort', 'descending')
+          .hasText('⇣ Sortable 1');
+        assert
+          .dom('[data-test-row-index="0"] [data-test-cell-index="0"]')
+          .hasText('b');
+        assert
+          .dom('[data-test-row-index="1"] [data-test-cell-index="0"]')
+          .hasText('a');
+
+        // Sort second column
+        await click(
+          '[data-test-header-cell-key="sortable2"] [data-test-sort-button]'
+        );
+
+        // Second column is sorted in ascending order and data of second column is sorted correctly
+        assert
+          .dom('[data-test-header-cell-key="sortable1"]')
+          .hasAria('sort', 'none')
+          .hasText('Sortable 1');
+        assert
+          .dom('[data-test-header-cell-key="sortable2"]')
+          .hasAria('sort', 'ascending')
+          .hasText('⇡ Sortable 2');
+        assert
+          .dom('[data-test-row-index="0"] [data-test-cell-index="1"]')
+          .hasText('1');
+        assert
+          .dom('[data-test-row-index="1"] [data-test-cell-index="1"]')
+          .hasText('2');
+      });
+
+      test('it handle custom sortKey correctly', async function (assert) {
+        this.columns = [
+          {
+            key: 'col1',
+            label: 'Column 1',
+            sortable: true,
+            sortKey: 'someKey',
+          },
+        ];
+        this.data = [
+          {
+            col1: 'a',
+            someKey: 'c',
+          },
+          {
+            col1: 'b',
+            someKey: 'a',
+          },
+          {
+            col1: 'c',
+            someKey: 'b',
+          },
+        ];
+
+        await render(
+          hbs`<CsDataTable @columns={{this.columns}} @data={{this.data}} as |table|>
+                <table.row as |row|>
+                  <row.cell @key="col1" as |item|>{{item.col1}}</row.cell>
+                </table.row>
+              </CsDataTable>`
+        );
+
+        assert
+          .dom('[data-test-row-index="0"] [data-test-cell-index="0"]')
+          .hasText('a');
+        assert
+          .dom('[data-test-row-index="1"] [data-test-cell-index="0"]')
+          .hasText('b');
+        assert
+          .dom('[data-test-row-index="2"] [data-test-cell-index="0"]')
+          .hasText('c');
+
+        await click(
+          '[data-test-header-cell-key="col1"] [data-test-sort-button]'
+        );
+
+        // Column is sorted by "someKey" instead of "col1"
+        assert
+          .dom('[data-test-row-index="0"] [data-test-cell-index="0"]')
+          .hasText('b');
+        assert
+          .dom('[data-test-row-index="1"] [data-test-cell-index="0"]')
+          .hasText('c');
+        assert
+          .dom('[data-test-row-index="2"] [data-test-cell-index="0"]')
+          .hasText('a');
+
+        await click(
+          '[data-test-header-cell-key="col1"] [data-test-sort-button]'
+        );
+
+        assert
+          .dom('[data-test-row-index="0"] [data-test-cell-index="0"]')
+          .hasText('a');
+        assert
+          .dom('[data-test-row-index="1"] [data-test-cell-index="0"]')
+          .hasText('c');
+        assert
+          .dom('[data-test-row-index="2"] [data-test-cell-index="0"]')
+          .hasText('b');
+      });
+
+      test('it handle custom sortFn correctly', async function (assert) {
+        assert.expect(6);
+
+        this.columns = [
+          {
+            key: 'col1',
+            label: 'Column 1',
+            sortable: true,
+            sortFn: (a, b, direction) => {
+              assert.propContains(
+                a,
+                {
+                  col1: 'val2',
+                  someProp: 'prop2',
+                },
+                'It pass left item correctly'
+              );
+              assert.propContains(
+                b,
+                {
+                  col1: 'val1',
+                  someProp: 'prop1',
+                },
+                'It pass right item correctly'
+              );
+              assert.strictEqual(
+                direction,
+                'asc',
+                'It pass direction correctly'
+              );
+              assert.step('sortFn');
+            },
+          },
+        ];
+        this.data = [
+          {
+            col1: 'val1',
+            someProp: 'prop1',
+          },
+          {
+            col1: 'val2',
+            someProp: 'prop2',
+          },
+        ];
+
+        await render(
+          hbs`<CsDataTable @columns={{this.columns}} @data={{this.data}} as |table|>
+                <table.row as |row|>
+                  <row.cell @key="col1" as |item|>{{item.col1}}</row.cell>
+                </table.row>
+              </CsDataTable>`
+        );
+
+        assert.verifySteps([]);
+
+        await click(
+          '[data-test-header-cell-key="col1"] [data-test-sort-button]'
+        );
+
+        assert.verifySteps(['sortFn']);
+      });
+    });
   });
 });

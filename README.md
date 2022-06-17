@@ -10,7 +10,10 @@ It provides a `<CsDataTable>` component allowing to display data in a table with
 - fully customizable cell content (you can easily use your own components)
 - customize display of "empty data" and "no search results" state
 - rows selection
-- custom actions on selected rows
+  - custom actions on selected rows
+- sorting
+  - default sorting and custom sorting function on columns
+  - initial sort on a column
 
 ## Demo
 
@@ -33,13 +36,17 @@ https://user-images.githubusercontent.com/56396753/172222699-be4d07fb-0ab3-4ef0-
 `CsDataTable` take two mandatory arguments `@columns` and `@data`
 
 `@columns` is an array of columns with following properties
-| Property      | Required    | Description                                                                               |
-| ------------- | ----------- | ----------------------------------------------------------------------------------------- |
-| `key`         | true        | Column identifier, used to match corresponding cell in `<table.row>`                      |
-| `label`       | false       | Text to display for the column, if not set `key` will be used                             |
-| `hidden`      | false       | When set to `true` column will be hidden                                                  |
-| `searchable`  | false       | When set to `true` it will allow filtering on this column (if column is not hidden)         |
-| `searchKey`   | false       | Default to `key`, override if you want to target a specific property of your data object  |
+| Property      | Required    | Description                                                                                                               |
+| ------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `key`         | true        | Column identifier, used to match corresponding cell in `<table.row>`                                                      |
+| `label`       | false       | Text to display for the column, if not set `key` will be used                                                             |
+| `hidden`      | false       | When set to `true` column will be hidden                                                                                  |
+| `searchable`  | false       | When set to `true` it will allow filtering on this column (if column is not hidden)                                       |
+| `searchKey`   | false       | Default to `key`, override if you want to target a specific property of your data object                                  |
+| `sortable`    | false       | When set to `true` column will be sortable                                                                                |
+| `sortKey`     | false       | Default to `key`, override if you want to target a specific property of your data object                                  |
+| `sortFn`      | false       | Define one function if you want to apply a custom sort on your column: `sortFn: (a, b, direction) => { // your code }`    |
+| `initialSort` | false       | `desc` or `asc`, when set column will be initially sorted in that direction                                               |
 
 `@data` is an array of items to display
 
@@ -122,6 +129,9 @@ All features
 - enable filtering on `id` and `name` columns
   - set search debounce value to 200m via `@debounce`
   - slot no result message (via `<table.noResult>`)
+- enable sorting on all columns
+  - with `name` column initially sorted in descending order
+  - with custom sort for `amount` column
 - enable rows selection (via `@allowSelection`)
   - loads with one row pre-selected
 - enable custom action on selected rows (via `<table.toolbarActions>`)
@@ -141,7 +151,7 @@ All features
     <row.cell @key="id" as |item|>{{item.id}}</row.cell>
     <row.cell @key="name" as |item|>{{item.name}}</row.cell>
     <row.cell @key="amount" as |item|>{{item.amount}}</row.cell>
-    <row.cell @key="allProperties" as |item|><YourComponent @item={{item}} /></row.cell>
+    <row.cell @key="allProperties" as |item|><!-- <YourComponent @item={{item}} /> --></row.cell>
   </table.row>
 </CsDataTable>
 ```
@@ -159,16 +169,27 @@ export default class ExampleComponent extends Component {
         key: 'id',
         label: 'ID',
         searchable: true,
+        sortable: true,
       },
       {
         key: 'name',
         label: 'Name',
         searchable: true,
+        sortable: true,
+        initialSort: 'desc',
       },
       {
         key: 'amount',
         label: 'Amount',
         hidden: true,
+        sortable: true,
+        sortFn: (a, b, direction) => {
+          if (direction === 'asc') {
+            return a.amount - b.amount;
+          } else {
+            return b.amount - a.amount;
+          }
+        },
       },
       {
         key: 'allProperties',

@@ -1,0 +1,29 @@
+$button-background-color: #F5F5F5;
+$button-color: #24292E;
+
+.cs-data-table {
+  // Inspired from https://getcssscan.com/css-buttons-examples
+  button {
+    appearance: none;
+    background-color: $button-background-color;
+    border: 1px solid darken($button-background-color, 10%);
+    border-radius: 5px;
+    color: $button-color;
+    cursor: pointer;
+    padding: 3px 10px;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  button:disabled {
+    color: lighten($button-color, 50%);
+    cursor: default;
+  }
+
+  button:not(:disabled) {
+    &:focus, &:hover {
+      background-color: lighten($button-background-color, 30%);
+      text-decoration: none;
+    }
+  }
+}

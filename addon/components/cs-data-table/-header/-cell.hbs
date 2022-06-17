@@ -1,5 +1,9 @@
 {{#if (or (not @column.hidden) @isCustomizingColumns)}}
-  <th data-test-header-cell-index={{@index}}>
+  <th
+    aria-sort={{if @column.sortable this.getAriaSort}}
+    data-test-header-cell-index={{@index}}
+    data-test-header-cell-key={{@column.key}}
+  >
     {{#if @isCustomizingColumns}}
       <div class="cs-data-table-columns-customization">
         {{#unless @first}}
@@ -31,6 +35,26 @@
         {{/unless}}
       </div>
     {{/if}}
-    <span data-test-label>{{@column.label}}</span>
+    {{#if @column.sortable}}
+      <button
+        class="sortable"
+        data-test-sort-button
+        type="button"
+        {{on "click" (fn @onSort @column)}}
+      >
+        {{#if (eq @sortColumnKey @column.key)}}
+          <span data-test-sort-direction={{@sortDirection}}>
+            {{#if (eq @sortDirection 'asc')}}
+              &#8673;
+            {{else}}
+              &#8675;
+            {{/if}}
+          </span>
+        {{/if}}
+        <span data-test-label>{{@column.label}}</span>
+      </button>
+    {{else}}
+      <span data-test-label>{{@column.label}}</span>
+    {{/if}}
   </th>
 {{/if}}

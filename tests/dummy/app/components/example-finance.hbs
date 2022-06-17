@@ -17,6 +17,14 @@
       {{/if}}
       filtering
     </button>
+    <button type="button" data-test-toggle-sorting {{on "click" (fn (mut this.enableSorting) (not this.enableSorting))}}>
+      {{#if this.enableSorting}}
+        Disable
+      {{else}}
+        Enable
+      {{/if}}
+      sorting
+    </button>
     {{#if this.enableFiltering}}
       <label>
         Search debounce
@@ -64,9 +72,9 @@
     <table.row as |row|>
       <row.cell @key="id" as |item|>{{item.id}}</row.cell>
       <row.cell @key="name" as |item|>{{item.name}}</row.cell>
-      <row.cell @key="amount" as |item|>{{item.amount}}</row.cell>
+      <row.cell @key="amount" as |item|>{{item.amount}} €</row.cell>
       <row.cell @key="strangeKey" as |item|>{{item.email}}</row.cell>
-      <row.cell @key="creditCardIssuer" as |item|>{{item.creditCardIssuer}}</row.cell>
+      <row.cell @key="strangeKey2" as |item|>{{item.creditCardIssuer}}</row.cell>
       <row.cell @key="creditCardNumber" as |item|>{{item.creditCardNumber}}</row.cell>
       <row.cell @key="creditCardExpirationDate" as |item|>{{item.creditCardExpirationDate}}</row.cell>
       <row.cell @key="actions" class="center" as |item|><button type="button" {{on 'click' (fn this.showSecretData item)}}>Show</button></row.cell>

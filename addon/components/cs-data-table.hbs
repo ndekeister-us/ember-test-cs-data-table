@@ -47,7 +47,10 @@
             @index={{index}}
             @isCustomizingColumns={{this.isCustomizingColumns}}
             @last={{eq index (dec @columns.length)}}
+            @sortDirection={{this.sortDirection}}
+            @sortColumnKey={{this.sortColumn.key}}
             @onMove={{this.moveColumn}}
+            @onSort={{this.updateSorting}}
             @onToggleVisibility={{fn (mut column.hidden)}}
           />
         {{/each}}

@@ -10,6 +10,8 @@ export default class ExampleFinanceComponent extends Component {
 
   @tracked enableFiltering = true;
 
+  @tracked enableSorting = true;
+
   @tracked searchDebounce = '500';
 
   get columns() {
@@ -18,26 +20,50 @@ export default class ExampleFinanceComponent extends Component {
         key: 'id',
         label: 'ID',
         searchable: this.enableFiltering,
+        sortable: this.enableSorting,
       },
       {
         key: 'name',
         label: 'Name',
         searchable: this.enableFiltering,
+        sortable: this.enableSorting,
       },
       {
         key: 'amount',
         label: 'Amount',
+        sortable: this.enableSorting,
+        initialSort: 'desc',
+        sortFn: ({ amount: a }, { amount: b }, direction) => {
+          if (direction === 'asc') {
+            return a - b;
+          } else {
+            return b - a;
+          }
+        },
       },
       {
         key: 'strangeKey',
         label: 'Email',
         searchable: this.enableFiltering,
         searchKey: 'email',
+        sortable: this.enableSorting,
+        sortFn: ({ email: a }, { email: b }, direction) => {
+          let _a = a.split('@')[0];
+          let _b = b.split('@')[0];
+          if (direction === 'asc') {
+            return _a.localeCompare(_b);
+          } else {
+            return _b.localeCompare(_a);
+          }
+        },
       },
       {
-        key: 'creditCardIssuer',
+        key: 'strangeKey2',
         label: 'Credit card issuer',
         searchable: this.enableFiltering,
+        searchKey: 'creditCardIssuer',
+        sortable: this.enableSorting,
+        sortKey: 'creditCardIssuer',
       },
       {
         key: 'creditCardNumber',

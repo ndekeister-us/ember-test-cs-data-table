@@ -1,12 +1,16 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
+import { sortBy } from 'ember-composable-helpers/helpers/sort-by';
 
 class Column {
   key;
   label;
   searchable;
   searchKey;
+  sortable;
+  sortKey;
+  sortFn;
 
   // Tracked data
   @tracked hidden;
@@ -17,13 +21,28 @@ class Column {
   _order;
 
   constructor(
-    { hidden = false, key, label = key, searchable = false, searchKey = key },
+    {
+      hidden = false,
+      key,
+      label = key,
+      searchable = false,
+      searchKey = key,
+      sortable = false,
+      sortKey = key,
+      sortFn,
+    },
     index
   ) {
     this.key = key;
     this.label = label;
     this.searchable = searchable;
     this.searchKey = searchKey;
+    this.sortable = sortable;
+    this.sortKey = sortKey;
+
+    if (typeof sortFn === 'function') {
+      this.sortFn = sortFn;
+    }
 
     this.hidden = hidden;
     this._hidden = this.hidden;
@@ -54,20 +73,41 @@ export default class CsDataTableComponent extends Component {
 
   @tracked searchText = '';
 
+  @tracked sortColumn;
+
+  @tracked sortDirection = 'asc';
+
   get displayedData() {
+    let data;
+
     if (this.isSearchEnabled && this.searchText.trim() !== '') {
       let searchText = this.searchText.trim().toLowerCase();
       let searchableColumnsKeys = this.searchableColumns.map(
         (column) => column.searchKey
       );
-      return this.data.filter((item) => {
+      data = this.data.filter((item) => {
         return searchableColumnsKeys.some((key) => {
           return item[key].toString().toLowerCase().includes(searchText);
         });
       });
     } else {
-      return this.data;
+      data = this.data;
     }
+
+    if (this.sortColumn) {
+      if (typeof this.sortColumn.sortFn === 'function') {
+        data.sort((a, b) => {
+          return this.sortColumn.sortFn(a, b, this.sortDirection);
+        });
+      } else {
+        return sortBy([
+          `${this.sortColumn.sortKey}:${this.sortDirection}`,
+          data,
+        ]);
+      }
+    }
+
+    return data;
   }
 
   get selectedItems() {
@@ -92,7 +132,18 @@ export default class CsDataTableComponent extends Component {
   initializeColumns() {
     this.columns = this.args.columns
       .filter((column) => !!column.key)
-      .map((column, i) => new Column(column, i));
+      .map((column, i) => {
+        let kColumn = new Column(column, i);
+
+        if (column.initialSort) {
+          this.updateSorting(kColumn);
+          if (['asc', 'desc'].includes(column.initialSort)) {
+            this.sortDirection = column.initialSort;
+          }
+        }
+
+        return kColumn;
+      });
   }
 
   @action
@@ -134,6 +185,16 @@ export default class CsDataTableComponent extends Component {
     this.columns.forEach((column) => {
       column.reset();
     });
+  }
+
+  @action
+  updateSorting(column) {
+    if (this.sortColumn?.key !== column.key) {
+      this.sortColumn = column;
+      this.sortDirection = 'asc';
+    } else {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    }
   }
 
   @action

@@ -51,46 +51,72 @@ module('Acceptance | application', function (hooks) {
       assert
         .dom('[data-test-financial-data-table] [data-test-header-cell-index]')
         .exists({ count: 7 });
+
       assert
         .dom(
-          '[data-test-financial-data-table] [data-test-header-cell-index="0"]'
+          '[data-test-financial-data-table] [data-test-header-cell-key="id"]'
         )
-        .hasText('ID');
+        .hasAttribute('data-test-header-cell-index', '0')
+        .hasText('ID')
+        .hasAria('sort', 'none', 'Column is sortable but not sorted yet');
+
       assert
         .dom(
-          '[data-test-financial-data-table] [data-test-header-cell-index="1"]'
+          '[data-test-financial-data-table] [data-test-header-cell-key="name"]'
         )
-        .hasText('Name');
+        .hasAttribute('data-test-header-cell-index', '1')
+        .hasText('Name')
+        .hasAria('sort', 'none', 'Column is sortable but not sorted yet');
+
       assert
         .dom(
-          '[data-test-financial-data-table] [data-test-header-cell-index="2"]'
+          '[data-test-financial-data-table] [data-test-header-cell-key="amount"]'
         )
-        .hasText('Amount');
+        .hasAttribute('data-test-header-cell-index', '2')
+        .hasText('⇣ Amount')
+        .hasAria(
+          'sort',
+          'descending',
+          'Column is sorted by default in desc order'
+        );
+
       assert
         .dom(
-          '[data-test-financial-data-table] [data-test-header-cell-index="3"]'
+          '[data-test-financial-data-table] [data-test-header-cell-key="strangeKey"]'
         )
-        .hasText('Email');
+        .hasAttribute('data-test-header-cell-index', '3')
+        .hasText('Email')
+        .hasAria('sort', 'none', 'Column is sortable but not sorted yet');
+
       assert
         .dom(
-          '[data-test-financial-data-table] [data-test-header-cell-index="4"]'
+          '[data-test-financial-data-table] [data-test-header-cell-key="strangeKey2"]'
         )
-        .hasText('Credit card issuer');
+        .hasAttribute('data-test-header-cell-index', '4')
+        .hasText('Credit card issuer')
+        .hasAria('sort', 'none', 'Column is sortable but not sorted yet');
+
       assert
         .dom(
-          '[data-test-financial-data-table] [data-test-header-cell-index="5"]'
+          '[data-test-financial-data-table] [data-test-header-cell-key="creditCardNumber"]'
         )
-        .hasText('Credit card number');
+        .hasAttribute('data-test-header-cell-index', '5')
+        .hasText('Credit card number')
+        .doesNotHaveAria('sort', 'Column is not sortable');
+
       assert
         .dom(
-          '[data-test-financial-data-table] [data-test-header-cell-index="6"]'
+          '[data-test-financial-data-table] [data-test-header-cell-key="creditCardExpirationDate"]'
         )
-        .doesNotExist('Column 6 is hidden');
+        .doesNotExist('Column is not displayed');
+
       assert
         .dom(
-          '[data-test-financial-data-table] [data-test-header-cell-index="7"]'
+          '[data-test-financial-data-table] [data-test-header-cell-key="actions"]'
         )
-        .hasText('Sensible data');
+        .hasAttribute('data-test-header-cell-index', '7')
+        .hasText('Sensible data')
+        .doesNotHaveAria('sort', 'Column is not sortable');
     });
 
     test('it clear and populate data correctly', async function (assert) {
@@ -193,6 +219,53 @@ module('Acceptance | application', function (hooks) {
       assert
         .dom('[data-test-financial-data-table] [data-test-searchbar]')
         .exists('Searchbar is displayed again as filtering is enabled');
+    });
+
+    test('it enable and disable sorting correctly', async function (assert) {
+      await visit('/');
+
+      assert
+        .dom(
+          '[data-test-financial-data-table] [data-test-demo-actions] [data-test-toggle-sorting]'
+        )
+        .hasText('Disable sorting');
+      assert
+        .dom(
+          '[data-test-financial-data-table] [data-test-header-cell-index] [data-test-sort-button]'
+        )
+        .exists({ count: 5 }, 'We have correct number of sortable columns');
+
+      // Disable sorting
+      await click(
+        '[data-test-financial-data-table] [data-test-demo-actions] [data-test-toggle-sorting]'
+      );
+
+      assert
+        .dom(
+          '[data-test-financial-data-table] [data-test-demo-actions] [data-test-toggle-sorting]'
+        )
+        .hasText('Enable sorting');
+      assert
+        .dom(
+          '[data-test-financial-data-table] [data-test-header-cell-index] [data-test-sort-button]'
+        )
+        .doesNotExist('We dont have any sortable columns');
+
+      // Enable sorting
+      await click(
+        '[data-test-financial-data-table] [data-test-demo-actions] [data-test-toggle-sorting]'
+      );
+
+      assert
+        .dom(
+          '[data-test-financial-data-table] [data-test-demo-actions] [data-test-toggle-sorting]'
+        )
+        .hasText('Disable sorting');
+      assert
+        .dom(
+          '[data-test-financial-data-table] [data-test-header-cell-index] [data-test-sort-button]'
+        )
+        .exists({ count: 5 }, 'We have correct number of sortable columns');
     });
 
     test('it enable and disable columns customization correctly', async function (assert) {
